@@ -1,0 +1,52 @@
+configuration:
+  api_key:
+    name: Gemini API Key
+    description: >-
+      Your Google Gemini API key. Get one at https://aistudio.google.com/apikey.
+      Required to use Gemini CLI.
+  model:
+    name: Model
+    description: >-
+      The Gemini model to use. 'auto' selects the best model automatically
+      (typically gemini-2.5-pro). Choose 'flash' for faster responses
+      or 'flash-lite' for the lightest/fastest model.
+  yolo_mode:
+    name: YOLO Mode
+    description: >-
+      Automatically approve all tool executions without prompting.
+      Use with caution - this gives Gemini CLI full control over
+      file modifications and command execution.
+  enable_mcp:
+    name: Enable Home Assistant MCP
+    description: >-
+      Enable the Home Assistant MCP server for direct entity and service
+      interaction. Allows Gemini to query states, call services,
+      and interact with your smart home.
+  terminal_font_size:
+    name: Terminal Font Size
+    description: >-
+      Font size for the web terminal in pixels (10-24).
+      Adjust for readability on your display.
+  terminal_theme:
+    name: Terminal Theme
+    description: >-
+      Color theme for the web terminal.
+      Choose 'dark' for dark backgrounds or 'light' for light backgrounds.
+  working_directory:
+    name: Working Directory
+    description: >-
+      The default working directory when Gemini CLI starts.
+      Use /homeassistant for direct access to HA configuration files.
+  session_persistence:
+    name: Session Persistence
+    description: >-
+      Enable tmux session persistence. When enabled, your terminal session
+      survives browser refreshes and disconnects. Recommended for long-running tasks.
+  auto_update_gemini:
+    name: Auto-update Gemini CLI
+    description: >-
+      Automatically check for and install Gemini CLI updates on add-on startup.
+      Keeps Gemini CLI current without requiring add-on version bumps.
+
+network:
+  7681/tcp: Web Terminal (ttyd)
