@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1] - 2026-04-06
+
+### Fixed
+- Correct AppArmor profile naming convention to `addon_gemini_cli`.
+- Explicitly enable `apparmor: true` in configuration.
+- Use explicit `bash` call for `run.sh` in Dockerfile to ensure execution.
+
 ## [0.2.0] - 2026-04-06
 
 ### Fixed
