@@ -22,10 +22,13 @@ WORKING_DIR=$(jq -r '.working_directory // "/homeassistant"' "$OPTIONS_FILE")
 # 2. Validate API key
 # =============================================================================
 if [ -z "$API_KEY" ]; then
-    echo "[ERROR] Gemini API key is required. Set it in the add-on configuration."
+    echo "[WARNING] No Gemini API key found in configuration."
+    echo "[INFO] You can still use the terminal and set your key later."
+    echo "[INFO] To set your key in the terminal, run: gemini auth login"
     echo "[INFO] Get your API key at https://aistudio.google.com/apikey"
-    # Keep container running so user can see the error in logs
-    sleep infinity
+    # Proceed anyway to allow terminal access
+else
+    echo "[INFO] Gemini API key found. Configuration complete."
 fi
 
 # =============================================================================

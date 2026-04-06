@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.2] - 2026-04-06
+
+### Changed
+- Make API key optional at startup. The terminal will now start even if no key is provided in the configuration.
+- Added instructions on how to set the API key manually using `gemini auth login` within the terminal.
+
 ## [0.2.1] - 2026-04-06
 
 ### Fixed
