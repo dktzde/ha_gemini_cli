@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.1] - 2026-04-06
+
+### Added
+- Automatically create `GEMINI.md` in the working directory on startup to provide context for the AI about Home Assistant paths and environment.
+
 ## [0.3.0] - 2026-04-06
 
 ### Changed

@@ -136,6 +136,7 @@ CMD ["/bin/bash", "-c", "\
   PERSIST_DIR='/homeassistant/.gemini-cli' && \
   mkdir -p \"$PERSIST_DIR\" && \
   if [ ! -L /root/.gemini ]; then rm -rf /root/.gemini; ln -s \"$PERSIST_DIR\" /root/.gemini; fi && \
+  printf \"# Home Assistant Add-on Environment\\n\\n## Path Mapping\\n\\nIn this container:\\n- /homeassistant = HA config (equivalent to /config in HA Core)\\n- Always translate /config/... to /homeassistant/...\\n\\n## Available Paths\\n\\n| Path | Description | Access |\\n|------|-------------|--------|\\n| /homeassistant | HA config | read-write |\\n| /share | Shared folder | read-write |\\n| /media | Media files | read-write |\\n| /ssl | SSL certs | read-only |\\n| /backup | Backups | read-only |\\n\" > \"$WORKING_DIR/GEMINI.md\" && \
   GEMINI_FLAGS='' && \
   if [ \"$YOLO_MODE\" = \"true\" ]; then GEMINI_FLAGS='--yolo'; echo '[INFO] YOLO mode enabled'; fi && \
   if [ \"$MODEL\" != \"auto\" ]; then GEMINI_FLAGS=\"$GEMINI_FLAGS -m $MODEL\"; echo \"[INFO] Model set to: $MODEL\"; fi && \
