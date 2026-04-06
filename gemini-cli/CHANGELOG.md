@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.8] - 2026-04-06
+
+### Fixed
+- Added missing `util-linux` package to Dockerfile to provide the `script` command for session logging.
+- Fixed terminal crash/loop in 0.3.7 by ensuring all logging dependencies are present.
+
 ## [0.3.7] - 2026-04-06
 
 ### Improved

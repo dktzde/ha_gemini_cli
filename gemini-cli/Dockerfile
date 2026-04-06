@@ -24,6 +24,7 @@ RUN apk add --no-cache \
     npm \
     openssh-client \
     ncurses \
+    util-linux \
     vim \
     nano \
     tmux \
