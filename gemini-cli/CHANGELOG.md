@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.7] - 2026-04-06
+
+### Improved
+- Implemented **Comprehensive Debug Mode**: All terminal session output is now captured in `/homeassistant/.gemini-cli/debug.log` using the `script` command.
+- Enabled Node.js diagnostic flags: `--trace-uncaught` and `--trace-warnings`.
+- Set `DEBUG="*"` environment variable for maximum Gemini CLI verbosity.
+- Added `set -x` to the startup script for step-by-step shell execution logging in Home Assistant supervisor logs.
+- Added `debuglog` alias to quickly view the session log within the terminal.
+
 ## [0.3.6] - 2026-04-06
 
 ### Improved
