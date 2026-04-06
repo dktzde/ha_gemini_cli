@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.6] - 2026-04-06
+
+### Improved
+- Implemented a **Crash-Protection Loop**: The terminal now automatically restarts if the shell or a command (like Gemini) crashes, preventing the addon from closing.
+- Added `halogs` alias which defaults to `ha core logs --tail 200` to prevent memory exhaustion from massive log output.
+- Increased Node.js memory limit to `4096MB` (if host allows).
+- Updated `GEMINI.md` with explicit warnings about log handling.
+- Optimized `ttyd` ping interval for better connection stability.
+
 ## [0.3.5] - 2026-04-06
 
 ### Changed
