@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.5] - 2026-04-06
+
+### Changed
+- Updated `GEMINI.md` with strict instructions for YAML indentation and syntax.
+- Added requirement to follow the latest Home Assistant documentation standards.
+- Included a reference to `CLAUDE.md` in `GEMINI.md` for cross-assistant context.
+
 ## [0.3.4] - 2026-04-06
 
 ### Improved

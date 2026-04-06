@@ -55,6 +55,11 @@ EOF
 cat > "$WORKING_DIR/GEMINI.md" << EOF
 # Home Assistant Add-on Environment
 
+## CRITICAL: YAML & Documentation
+- **YAML Precision:** You MUST ensure 100% correct YAML syntax and indentation. Home Assistant is extremely sensitive to indentation errors.
+- **Documentation:** Always follow the LATEST Home Assistant developer and user documentation. Patterns change frequently (e.g., UI-based config vs. YAML).
+- **Claude Reference:** For additional architectural context or previous logic, you may refer to the \`CLAUDE.md\` file if present in the Home Assistant configuration.
+
 ## CRITICAL: Reading Logs
 **NEVER** attempt to read files in \`/var/log/\` or \`/var/log/journal\` directly.
 **ALWAYS** use: \`ha core logs\`
