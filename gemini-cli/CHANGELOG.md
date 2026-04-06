@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0] - 2026-04-06
+
+### Changed
+- Adopted "full_access" mode for maximum compatibility and to resolve persistent permission issues.
+- Moved startup logic directly into `Dockerfile` `CMD` to eliminate `Permission denied` errors on external scripts.
+- Disabled AppArmor and enabled privileged mode (`SYS_ADMIN`).
+- Enabled host network and Docker API access.
+
 ## [0.2.2] - 2026-04-06
 
 ### Changed
