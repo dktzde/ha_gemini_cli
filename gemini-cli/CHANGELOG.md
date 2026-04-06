@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.0] - 2026-04-06
+
+### Fixed
+- Resolve `Permission denied` error for `run.sh` by adding execution bit in git index.
+- Update AppArmor profile to explicitly allow execution of `/run.sh`.
+
 ## [0.1.0] - 2026-03-28
 
 ### Added
