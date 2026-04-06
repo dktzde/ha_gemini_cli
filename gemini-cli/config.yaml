@@ -9,6 +9,7 @@ arch:
 startup: application
 boot: auto
 init: true
+apparmor: true
 ingress: true
 ingress_port: 7681
 ingress_stream: true

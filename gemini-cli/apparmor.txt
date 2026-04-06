@@ -1,6 +1,6 @@
 #include <tunables/global>
 
-profile gemini_cli flags=(attach_disconnected,mediate_deleted) {
+profile addon_gemini_cli flags=(attach_disconnected,mediate_deleted) {
   #include <abstractions/base>
 
   # Capabilities needed for terminal and networking
