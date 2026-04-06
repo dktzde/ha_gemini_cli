@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2] - 2026-04-06
+
+### Changed
+- Reverted to using a dedicated `run.sh` script for startup (now compatible with `full_access` mode).
+- Improved environment variable handling by writing to `/root/.bashrc` instead of `/etc/profile.d`.
+- Fixed potential crashes when reading/writing `GEMINI.md` by using more robust script logic.
+
 ## [0.3.1] - 2026-04-06
 
 ### Added

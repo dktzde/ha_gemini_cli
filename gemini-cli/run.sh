@@ -3,11 +3,8 @@ set -e
 
 echo "[INFO] Starting Gemini CLI for Home Assistant..."
 
-# =============================================================================
-# 1. Read configuration from Home Assistant
-# =============================================================================
+# 1. Read configuration
 OPTIONS_FILE="/data/options.json"
-
 API_KEY=$(jq -r '.api_key // ""' "$OPTIONS_FILE")
 MODEL=$(jq -r '.model // "auto"' "$OPTIONS_FILE")
 YOLO_MODE=$(jq -r '.yolo_mode // false' "$OPTIONS_FILE")
@@ -18,181 +15,75 @@ SESSION_PERSIST=$(jq -r '.session_persistence // true' "$OPTIONS_FILE")
 AUTO_UPDATE=$(jq -r '.auto_update_gemini // true' "$OPTIONS_FILE")
 WORKING_DIR=$(jq -r '.working_directory // "/homeassistant"' "$OPTIONS_FILE")
 
-# =============================================================================
-# 2. Validate API key
-# =============================================================================
+# 2. API Key Info
 if [ -z "$API_KEY" ]; then
-    echo "[WARNING] No Gemini API key found in configuration."
-    echo "[INFO] You can still use the terminal and set your key later."
-    echo "[INFO] To set your key in the terminal, run: gemini auth login"
-    echo "[INFO] Get your API key at https://aistudio.google.com/apikey"
-    # Proceed anyway to allow terminal access
+    echo "[WARNING] No Gemini API key found. Use 'gemini auth login' later."
 else
-    echo "[INFO] Gemini API key found. Configuration complete."
+    echo "[INFO] Gemini API key configured."
 fi
 
-# =============================================================================
-# 3. Set up persistent storage
-# =============================================================================
+# 3. Persistent storage
 PERSIST_DIR="/homeassistant/.gemini-cli"
 mkdir -p "$PERSIST_DIR"
-
-# Symlink ~/.gemini to persistent directory
 if [ ! -L /root/.gemini ]; then
     rm -rf /root/.gemini
     ln -s "$PERSIST_DIR" /root/.gemini
 fi
 
-echo "[INFO] Persistent storage: $PERSIST_DIR"
-
-# =============================================================================
-# 4. Write runtime environment file (sourced by .bashrc)
-# =============================================================================
+# 4. Environment for Bash/Gemini
 GEMINI_FLAGS=""
-if [ "$YOLO_MODE" = "true" ]; then
-    GEMINI_FLAGS="--yolo"
-    echo "[INFO] YOLO mode enabled (auto-approve all tools)"
-fi
+[ "$YOLO_MODE" = "true" ] && GEMINI_FLAGS="--yolo"
+[ "$MODEL" != "auto" ] && GEMINI_FLAGS="$GEMINI_FLAGS -m $MODEL"
 
-# Set model flag if not auto
-if [ "$MODEL" != "auto" ]; then
-    GEMINI_FLAGS="$GEMINI_FLAGS -m $MODEL"
-    echo "[INFO] Model set to: $MODEL"
-else
-    echo "[INFO] Using default model (auto)"
-fi
-
-cat > /etc/profile.d/gemini-env.sh << ENVEOF
+# Write to .bashrc instead of /etc/profile.d to avoid permission issues
+cat >> /root/.bashrc << EOF
 export GEMINI_API_KEY="$API_KEY"
 export HA_TOKEN="$SUPERVISOR_TOKEN"
 export HA_URL="http://supervisor/core"
 export GEMINI_FLAGS="$GEMINI_FLAGS"
-ENVEOF
+EOF
 
-# Also export for the current process (inherited by ttyd -> tmux -> bash)
 export GEMINI_API_KEY="$API_KEY"
 export HA_TOKEN="$SUPERVISOR_TOKEN"
 export HA_URL="http://supervisor/core"
 export GEMINI_FLAGS
 
-# =============================================================================
-# 5. Auto-update Gemini CLI (if enabled)
-# =============================================================================
-if [ "$AUTO_UPDATE" = "true" ]; then
-    echo "[INFO] Checking for Gemini CLI updates..."
-    npm update -g @google/gemini-cli 2>/dev/null \
-        && echo "[INFO] Gemini CLI updated successfully" \
-        || echo "[WARN] Update check failed, continuing with installed version"
-fi
-
-# =============================================================================
-# 6. Configure MCP server for Home Assistant
-# =============================================================================
-# Remove existing MCP config to ensure clean state
-gemini mcp remove homeassistant 2>/dev/null || true
-
-if [ "$ENABLE_MCP" = "true" ]; then
-    gemini mcp add homeassistant hass-mcp \
-        --env "HA_URL=http://supervisor/core" \
-        --env "HA_TOKEN=$SUPERVISOR_TOKEN" \
-        2>/dev/null && \
-    echo "[INFO] MCP configured with Home Assistant integration" || \
-    echo "[WARN] MCP configuration failed, trying settings.json fallback..."
-
-    # Fallback: write settings.json directly if gemini mcp add fails
-    SETTINGS_FILE="$PERSIST_DIR/settings.json"
-    if [ ! -f "$SETTINGS_FILE" ] || ! jq -e '.mcpServers.homeassistant' "$SETTINGS_FILE" >/dev/null 2>&1; then
-        jq -n '{
-            "mcpServers": {
-                "homeassistant": {
-                    "command": "hass-mcp",
-                    "env": {
-                        "HA_URL": "http://supervisor/core",
-                        "HA_TOKEN": "'"$SUPERVISOR_TOKEN"'"
-                    }
-                }
-            }
-        }' > "$SETTINGS_FILE"
-        echo "[INFO] MCP configured via settings.json fallback"
-    fi
-else
-    echo "[INFO] MCP disabled"
-fi
-
-# =============================================================================
-# 7. Write GEMINI.md for HA path instructions (only if not exists)
-# =============================================================================
-if [ ! -f "$WORKING_DIR/GEMINI.md" ]; then
-cat > "$WORKING_DIR/GEMINI.md" << 'GEMINIEOF'
+# 5. Create GEMINI.md for context
+cat > "$WORKING_DIR/GEMINI.md" << EOF
 # Home Assistant Add-on Environment
 
 ## Path Mapping
-
-In this add-on container, paths differ from HA Core:
-- `/homeassistant` = HA config directory (equivalent to `/config` in HA Core)
-- When users mention `/config/...`, translate to `/homeassistant/...`
+- /homeassistant = HA config (equivalent to /config in HA Core)
+- Always translate /config/... to /homeassistant/...
 
 ## Available Paths
-
 | Path | Description | Access |
 |------|-------------|--------|
-| `/homeassistant` | HA configuration | read-write |
-| `/share` | Shared folder | read-write |
-| `/media` | Media files | read-write |
-| `/ssl` | SSL certificates | read-only |
-| `/backup` | Backups | read-only |
+| /homeassistant | HA config | read-write |
+| /share | Shared folder | read-write |
+| /media | Media files | read-write |
+| /ssl | SSL certs | read-only |
+| /backup | Backups | read-only |
+EOF
 
-## Home Assistant Integration
-
-Use the `homeassistant` MCP server to query entities and call services.
-
-## Reading Home Assistant Logs
-
-```bash
-# View recent logs
-ha core logs 2>&1 | tail -100
-
-# Filter by keyword
-ha core logs 2>&1 | grep -i keyword
-
-# Read log file directly
-tail -100 /homeassistant/home-assistant.log
-```
-GEMINIEOF
-    echo "[INFO] Created GEMINI.md with HA path instructions"
-else
-    echo "[INFO] GEMINI.md already exists, skipping"
+# 6. MCP Config
+if [ "$ENABLE_MCP" = "true" ]; then
+    echo "[INFO] Configuring MCP..."
+    gemini mcp remove homeassistant 2>/dev/null || true
+    gemini mcp add homeassistant hass-mcp --env "HA_URL=http://supervisor/core" --env "HA_TOKEN=$SUPERVISOR_TOKEN" 2>/dev/null || true
 fi
 
-# =============================================================================
-# 8. Configure terminal theme
-# =============================================================================
-if [ "$THEME" = "dark" ]; then
-    COLORS="background=#1e1e2e,foreground=#cdd6f4,cursor=#f5e0dc"
-else
-    COLORS="background=#eff1f5,foreground=#4c4f69,cursor=#dc8a78"
-fi
+# 7. Terminal Theme
+COLORS="background=#1e1e2e,foreground=#cdd6f4,cursor=#f5e0dc"
+[ "$THEME" != "dark" ] && COLORS="background=#eff1f5,foreground=#4c4f69,cursor=#dc8a78"
 
-# =============================================================================
-# 9. Configure session persistence
-# =============================================================================
-if [ "$SESSION_PERSIST" = "true" ]; then
-    SHELL_CMD="tmux new-session -A -s gemini"
-    echo "[INFO] Session persistence enabled (tmux)"
-else
-    SHELL_CMD="bash --login"
-fi
+# 8. Start ttyd
+SHELL_CMD="bash --login"
+[ "$SESSION_PERSIST" = "true" ] && SHELL_CMD="tmux new-session -A -s gemini"
 
-# =============================================================================
-# 10. Launch web terminal
-# =============================================================================
-echo "[INFO] Starting web terminal on port 7681..."
-
+echo "[INFO] Launching terminal..."
 cd "$WORKING_DIR"
-
 exec ttyd --port 7681 --writable --ping-interval 30 --max-clients 5 \
     -t "fontSize=$FONT_SIZE" \
-    -t "fontFamily=Monaco,Consolas,monospace" \
-    -t "scrollback=20000" \
     -t "theme=$COLORS" \
     $SHELL_CMD
