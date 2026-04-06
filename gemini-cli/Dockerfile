@@ -113,5 +113,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
 
-ENTRYPOINT []
-CMD ["/bin/bash", "/run.sh"]
+ENTRYPOINT ["/bin/bash", "/run.sh"]

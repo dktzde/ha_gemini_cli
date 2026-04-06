@@ -35,22 +35,31 @@ GEMINI_FLAGS=""
 [ "$YOLO_MODE" = "true" ] && GEMINI_FLAGS="--yolo"
 [ "$MODEL" != "auto" ] && GEMINI_FLAGS="$GEMINI_FLAGS -m $MODEL"
 
-# Write to .bashrc instead of /etc/profile.d to avoid permission issues
+# Increase Node.js memory limit and set environment
 cat >> /root/.bashrc << EOF
 export GEMINI_API_KEY="$API_KEY"
 export HA_TOKEN="$SUPERVISOR_TOKEN"
 export HA_URL="http://supervisor/core"
 export GEMINI_FLAGS="$GEMINI_FLAGS"
+export NODE_OPTIONS="--max-old-space-size=2048"
 EOF
 
 export GEMINI_API_KEY="$API_KEY"
 export HA_TOKEN="$SUPERVISOR_TOKEN"
 export HA_URL="http://supervisor/core"
 export GEMINI_FLAGS
+export NODE_OPTIONS="--max-old-space-size=2048"
 
 # 5. Create GEMINI.md for context
 cat > "$WORKING_DIR/GEMINI.md" << EOF
 # Home Assistant Add-on Environment
+
+## CRITICAL: Reading Logs
+**NEVER** attempt to read files in \`/var/log/\` or \`/var/log/journal\` directly. These are binary or restricted files and WILL cause a system crash.
+**ALWAYS** use the following command to read Home Assistant logs:
+\`\`\`bash
+ha core logs
+\`\`\`
 
 ## Path Mapping
 - /homeassistant = HA config (equivalent to /config in HA Core)

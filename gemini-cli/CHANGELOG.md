@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.3] - 2026-04-06
+
+### Improved
+- Increased Node.js memory limit to `2048MB` to prevent crashes when reading large or binary files.
+- Updated `GEMINI.md` with critical instructions to avoid binary log files in `/var/log` and use `ha core logs` instead.
+- Switched back to a cleaner `ENTRYPOINT` in the `Dockerfile`.
+- Optimized addon privileges for better stability.
+
 ## [0.3.2] - 2026-04-06
 
 ### Changed
