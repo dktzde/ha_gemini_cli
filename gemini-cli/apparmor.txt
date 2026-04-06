@@ -33,6 +33,7 @@ profile gemini_cli flags=(attach_disconnected,mediate_deleted) {
   /sys/** r,
 
   # Execute permissions for binaries
+  /run.sh ixr,
   /bin/** ixr,
   /usr/bin/** ixr,
   /usr/lib/** ixmr,
