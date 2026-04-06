@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.4] - 2026-04-06
+
+### Improved
+- Fixed `Permission denied` error for environment variables by properly writing to `.bashrc` only.
+- Enhanced terminal stability by using a more robust `tmux` attachment strategy.
+- Reduced WebSocket timeouts by decreasing the ping interval to 10 seconds.
+- Backgrounded MCP configuration to speed up startup.
+- Prevented duplicate environment exports in `.bashrc`.
+
 ## [0.3.3] - 2026-04-06
 
 ### Improved
