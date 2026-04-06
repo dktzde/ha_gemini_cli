@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.9] - 2026-04-06
+
+### Recovery
+- **CRITICAL RECOVERY:** Removed experimental `script` logging and `DEBUG=*` flags to resolve severe system instability.
+- **Safety First:** Reduced Node.js memory limit from `4096MB` down to a safe `1024MB`.
+- **Stability:** Reverted to a simplified `run.sh` startup logic without complex terminal wrapping.
+- **Clean Slate:** Reset environment variable handling to ensure no corruption in `.bashrc`.
+
 ## [0.3.8] - 2026-04-06
 
 ### Fixed
